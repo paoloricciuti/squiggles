@@ -57,6 +57,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Squiggles Notes - {data.selected_note.title}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</svelte:head>
+
 <form use:enhance method="POST" action="?/save" class="flex flex-1 flex-col">
 	<!-- Editor Header -->
 	<div class="border-b border-orange-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
