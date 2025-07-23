@@ -47,6 +47,10 @@
 		"drizzle-orm": "^0.40.0",
 		"jose": "^6.0.12"
 	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"packageManager": "npm@10.12.4",
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild"
