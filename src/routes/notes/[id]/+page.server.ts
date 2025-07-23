@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 export async function load({ params, parent }) {
 	const { notes, user } = await parent();
@@ -6,7 +6,7 @@ export async function load({ params, parent }) {
 	const selected_note = notes.find((note) => note.id === +params.id);
 
 	if (!selected_note) {
-		throw error(404, 'Note not found');
+		redirect(302, '/notes');
 	}
 
 	return {
