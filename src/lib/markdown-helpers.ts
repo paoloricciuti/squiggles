@@ -6,6 +6,49 @@ export const default_options: MarkdownHelperOptions = {
 	tab_indent_size: 2
 };
 
+// Regex constants for markdown patterns
+const LIST_REGEX = /^(\s*)([-*+]|\d+\.)\s/;
+const LIST_WITH_CONTENT_REGEX = /^(\s*)([-*+]|\d+\.)\s+(.*)/;
+const CHECKBOX_REGEX = /^(\s*)([-*+])\s*\[([ x])\]\s/;
+const CHECKBOX_WITH_CONTENT_REGEX = /^(?<indent>\s*)(?<marker>[-*+])\s*\[([ x])\]\s*(?<content>.*)/;
+const CHECKBOX_FOR_TOGGLE_REGEX = /^(?<indent>\s*)(?<marker>[-*+])\s*\[(?<state>[ x])\]/;
+
+// Helper types
+interface LineInfo {
+	line_start: number;
+	line_end: number;
+	current_line: string;
+}
+
+// Helper function to get current line information
+function get_current_line_info(value: string, selection_start: number): LineInfo {
+	const line_start = value.lastIndexOf('\n', selection_start - 1) + 1;
+	const line_end = value.indexOf('\n', selection_start);
+	const actual_line_end = line_end === -1 ? value.length : line_end;
+	const current_line = value.substring(line_start, actual_line_end);
+	
+	return {
+		line_start,
+		line_end: actual_line_end,
+		current_line
+	};
+}
+
+// Helper function to replace a line in textarea and set cursor position
+function replace_line_and_set_cursor(
+	textarea: HTMLTextAreaElement,
+	line_info: LineInfo,
+	new_line: string,
+	cursor_pos: number
+): void {
+	const { line_start, line_end } = line_info;
+	const { value } = textarea;
+	
+	const new_value = value.substring(0, line_start) + new_line + value.substring(line_end);
+	textarea.value = new_value;
+	textarea.setSelectionRange(cursor_pos, cursor_pos);
+}
+
 export function handle_tab_indentation(
 	textarea: HTMLTextAreaElement,
 	event: KeyboardEvent,
@@ -14,17 +57,11 @@ export function handle_tab_indentation(
 	if (event.key !== 'Tab') return false;
 
 	const { selectionStart: selection_start, value } = textarea;
-
-	// Find the start of the current line
-	const line_start = value.lastIndexOf('\n', selection_start - 1) + 1;
-	const next_line = value.indexOf('\n', selection_start);
-	const line_end = next_line === -1 ? value.length : next_line;
-	const current_line = value.substring(line_start, line_end);
+	const line_info = get_current_line_info(value, selection_start);
+	const { current_line } = line_info;
 
 	// Check if we're in a list context (starts with -, *, +, or numbered list)
-	const list_regex = /^(\s*)([-*+]|\d+\.)\s/;
-	const checkbox_regex = /^(\s*)([-*+])\s*\[([ x])\]\s/;
-	const match = current_line.match(list_regex) || current_line.match(checkbox_regex);
+	const match = current_line.match(LIST_REGEX) || current_line.match(CHECKBOX_REGEX);
 
 	if (!match) return false;
 	event.preventDefault();
@@ -37,25 +74,17 @@ export function handle_tab_indentation(
 		if (current_indent.length >= options.tab_indent_size) {
 			const new_indent = current_indent.substring(options.tab_indent_size);
 			const new_line = new_indent + current_line.substring(match[1].length);
-			const new_value =
-				value.substring(0, line_start) +
-				new_line +
-				value.substring(line_start + current_line.length);
-
-			textarea.value = new_value;
-			const new_cursor_pos = selection_start - options.tab_indent_size;
-			textarea.setSelectionRange(new_cursor_pos, new_cursor_pos);
+			const new_cursor_pos = Math.max(0, selection_start - options.tab_indent_size);
+			
+			replace_line_and_set_cursor(textarea, line_info, new_line, new_cursor_pos);
 		}
 	} else {
 		// Tab: Add indentation
 		const new_indent = match[1] + indent_string;
 		const new_line = new_indent + current_line.substring(match[1].length);
-		const new_value =
-			value.substring(0, line_start) + new_line + value.substring(line_start + current_line.length);
-
-		textarea.value = new_value;
 		const new_cursor_pos = selection_start + options.tab_indent_size;
-		textarea.setSelectionRange(new_cursor_pos, new_cursor_pos);
+		
+		replace_line_and_set_cursor(textarea, line_info, new_line, new_cursor_pos);
 	}
 
 	return true;
@@ -68,20 +97,15 @@ export function handle_enter_for_checklists(
 	if (event.key !== 'Enter') return false;
 
 	const { selectionStart: selection_start, value } = textarea;
-
-	// Find the current line
-	const line_start = value.lastIndexOf('\n', selection_start - 1) + 1;
-	const line_end = value.indexOf('\n', selection_start);
-	const current_line = value.substring(line_start, line_end === -1 ? value.length : line_end);
+	const line_info = get_current_line_info(value, selection_start);
+	const { current_line } = line_info;
 
 	// Check if we're in a checkbox list
-	const checkbox_regex = /^(?<indent>\s*)(?<marker>[-*+])\s*\[([ x])\]\s*(?<content>.*)/;
-	const match = current_line.match(checkbox_regex);
+	const match = current_line.match(CHECKBOX_WITH_CONTENT_REGEX);
 
 	if (!match) {
 		// Check for regular list items and continue them
-		const list_regex = /^(\s*)([-*+]|\d+\.)\s+(.*)/;
-		const list_match = current_line.match(list_regex);
+		const list_match = current_line.match(LIST_WITH_CONTENT_REGEX);
 
 		if (list_match) {
 			const [, indent, marker, content] = list_match;
@@ -89,12 +113,8 @@ export function handle_enter_for_checklists(
 			// If the line is empty (just the marker), remove it
 			if (!content.trim()) {
 				event.preventDefault();
-				const new_value =
-					value.substring(0, line_start) +
-					indent +
-					value.substring(line_end === -1 ? value.length : line_end);
-				textarea.value = new_value;
-				textarea.setSelectionRange(line_start + indent.length, line_start + indent.length);
+				const new_cursor_pos = line_info.line_start + indent.length;
+				replace_line_and_set_cursor(textarea, line_info, indent, new_cursor_pos);
 				return true;
 			}
 
@@ -127,12 +147,8 @@ export function handle_enter_for_checklists(
 	// If the line is empty (just the checkbox), remove it
 	if (!content.trim()) {
 		event.preventDefault();
-		const new_value =
-			value.substring(0, line_start) +
-			indent +
-			value.substring(line_end === -1 ? value.length : line_end);
-		textarea.value = new_value;
-		textarea.setSelectionRange(line_start + indent.length, line_start + indent.length);
+		const new_cursor_pos = line_info.line_start + indent.length;
+		replace_line_and_set_cursor(textarea, line_info, indent, new_cursor_pos);
 		return true;
 	}
 
@@ -156,18 +172,14 @@ export function handle_space_for_checkbox_toggle(
 	if (event.key !== ' ') return false;
 
 	const { selectionStart: selection_start, value } = textarea;
-
-	// Find the current line
-	const line_start = value.lastIndexOf('\n', selection_start - 1) + 1;
-	const line_end = value.indexOf('\n', selection_start);
-	const current_line = value.substring(line_start, line_end === -1 ? value.length : line_end);
+	const line_info = get_current_line_info(value, selection_start);
+	const { current_line } = line_info;
 
 	// Find cursor position within the line
-	const cursor_in_line = selection_start - line_start;
+	const cursor_in_line = selection_start - line_info.line_start;
 
 	// Check if we're in a checkbox context and find the checkbox brackets
-	const checkbox_regex = /^(?<indent>\s*)(?<marker>[-*+])\s*\[(?<state>[ x])\]/;
-	const match = current_line.match(checkbox_regex);
+	const match = current_line.match(CHECKBOX_FOR_TOGGLE_REGEX);
 
 	if (!match) return false;
 
@@ -185,16 +197,8 @@ export function handle_space_for_checkbox_toggle(
 	const new_checkbox = `[${new_state}]`;
 	const new_line = current_line.replace(/\[([ x])\]/, new_checkbox);
 
-	// Replace the line in the textarea
-	const new_value =
-		value.substring(0, line_start) +
-		new_line +
-		value.substring(line_end === -1 ? value.length : line_end);
-
-	textarea.value = new_value;
-
-	// Keep cursor in the same relative position
-	textarea.setSelectionRange(selection_start, selection_start);
+	// Replace the line in the textarea and keep cursor in the same position
+	replace_line_and_set_cursor(textarea, line_info, new_line, selection_start);
 
 	return true;
 }
