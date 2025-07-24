@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { get_notes } from '$lib/contexts/notes-contexts.js';
+	import { setup_markdown_helpers } from '$lib/markdown-helpers.js';
 
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
@@ -96,6 +97,7 @@
 		<textarea
 			name="content"
 			bind:value={note_content}
+			{@attach (element) => setup_markdown_helpers(element)}
 			oninput={(e) => update_content(e.currentTarget.value)}
 			class="h-full w-full resize-none border-none font-mono text-orange-900 placeholder-orange-400 outline-none dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
 			placeholder={`Start writing your note in markdown...
@@ -103,7 +105,7 @@
 # Heading 1
 ## Heading 2
 - List item
-- Another item
+  - Nested item (use Tab to indent)\n- Another item\n- [ ] Checklist item (press Enter for next)\n- [x] Completed item
 
 **Bold text** and *italic text*
 
