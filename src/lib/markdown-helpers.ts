@@ -149,6 +149,56 @@ export function handle_enter_for_checklists(
 	return true;
 }
 
+export function handle_space_for_checkbox_toggle(
+	textarea: HTMLTextAreaElement,
+	event: KeyboardEvent
+): boolean {
+	if (event.key !== ' ') return false;
+
+	const { selectionStart: selection_start, value } = textarea;
+
+	// Find the current line
+	const line_start = value.lastIndexOf('\n', selection_start - 1) + 1;
+	const line_end = value.indexOf('\n', selection_start);
+	const current_line = value.substring(line_start, line_end === -1 ? value.length : line_end);
+
+	// Find cursor position within the line
+	const cursor_in_line = selection_start - line_start;
+
+	// Check if we're in a checkbox context and find the checkbox brackets
+	const checkbox_regex = /^(?<indent>\s*)(?<marker>[-*+])\s*\[(?<state>[ x])\]/;
+	const match = current_line.match(checkbox_regex);
+
+	if (!match) return false;
+
+	const { indent, marker, state } = match.groups ?? {};
+	const checkbox_start = indent.length + marker.length + 1; // +1 for space after marker
+	const checkbox_end = checkbox_start + 3; // [x] or [ ]
+
+	// Check if cursor is inside the checkbox brackets
+	if (cursor_in_line < checkbox_start || cursor_in_line > checkbox_end) return false;
+
+	event.preventDefault();
+
+	// Toggle the checkbox state
+	const new_state = state === ' ' ? 'x' : ' ';
+	const new_checkbox = `[${new_state}]`;
+	const new_line = current_line.replace(/\[([ x])\]/, new_checkbox);
+
+	// Replace the line in the textarea
+	const new_value =
+		value.substring(0, line_start) +
+		new_line +
+		value.substring(line_end === -1 ? value.length : line_end);
+
+	textarea.value = new_value;
+
+	// Keep cursor in the same relative position
+	textarea.setSelectionRange(selection_start, selection_start);
+
+	return true;
+}
+
 export function setup_markdown_helpers(
 	textarea: HTMLTextAreaElement,
 	options: MarkdownHelperOptions = default_options
@@ -162,6 +212,13 @@ export function setup_markdown_helpers(
 		}
 
 		if (handle_enter_for_checklists(textarea, event)) {
+			// we prevent the default so we dispatch an artificial event to let
+			// the svelte handler work
+			textarea.dispatchEvent(new Event('input', { bubbles: true }));
+			return;
+		}
+
+		if (handle_space_for_checkbox_toggle(textarea, event)) {
 			// we prevent the default so we dispatch an artificial event to let
 			// the svelte handler work
 			textarea.dispatchEvent(new Event('input', { bubbles: true }));
