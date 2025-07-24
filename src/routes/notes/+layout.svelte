@@ -1,7 +1,20 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { set_notes_override } from '$lib/contexts/notes-contexts.js';
 
 	let { data, children, params } = $props();
+	let notes = $derived.by(() => {
+		const notes = $state(data.notes);
+		return notes;
+	});
+
+	set_notes_override((id) => {
+		const note = notes.findIndex((n) => n.id === id);
+		return (override) => {
+			if (note === -1) return;
+			Object.assign(notes[note], override);
+		};
+	});
 
 	let checked = $state(false);
 </script>
@@ -52,7 +65,7 @@
 
 		<!-- Notes List -->
 		<ul class="flex-1 overflow-y-auto">
-			{#each data.notes as note (note.id)}
+			{#each notes as note (note.id)}
 				<li
 					class="block border-b border-orange-100 p-4 transition-colors hover:bg-orange-50 focus:bg-orange-100 focus:outline-none dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:bg-gray-600 {params.id ===
 					note.id.toString()

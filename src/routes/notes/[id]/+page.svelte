@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
-	import { invalidate } from '$app/navigation';
+	import { get_notes } from '$lib/contexts/notes-contexts.js';
 
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
@@ -11,14 +11,12 @@
 		data.selected_note.updated_at ? new Date(data.selected_note.updated_at) : null
 	);
 
+	const override = $derived(get_notes()(data.selected_note.id));
+
 	// Auto-save functionality
 	let save_timeout: ReturnType<typeof setTimeout>;
-	function schedule_auto_save(should_invalidate = false) {
+	function schedule_auto_save() {
 		clearTimeout(save_timeout);
-		if (should_invalidate) {
-			save_note(should_invalidate);
-			return;
-		}
 		save_timeout = setTimeout(save_note, 2000);
 	}
 
@@ -30,23 +28,22 @@
 
 	function update_title(new_title: string) {
 		note_title = new_title;
-		schedule_auto_save(true);
+		schedule_auto_save();
 	}
 
 	// Save note function
-	async function save_note(should_invalidate = false) {
-		if (should_invalidate) {
-			invalidate('app:notes');
-		}
+	async function save_note() {
 		is_saving = true;
 		try {
+			const new_note = { title: note_title, content: note_content };
 			const response = await fetch(`/api/notes/${data.selected_note.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ title: note_title, content: note_content })
+				body: JSON.stringify(new_note)
 			});
 
 			if (response.ok) {
+				override(new_note);
 				last_saved = new Date();
 			}
 		} catch (error) {
@@ -83,7 +80,7 @@
 			<button
 				onclick={(e) => {
 					e.preventDefault();
-					save_note(true);
+					save_note();
 				}}
 				class="rounded bg-orange-500 px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 focus:outline-none disabled:opacity-50 dark:bg-orange-600 dark:hover:bg-orange-700"
 				disabled={is_saving}
