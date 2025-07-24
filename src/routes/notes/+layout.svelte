@@ -20,16 +20,16 @@
 </script>
 
 <div
-	class="grid h-screen bg-orange-50 not-sm:grid-cols-1 not-sm:*:col-span-full not-sm:*:row-start-1 not-sm:*:row-end-1 sm:grid-cols-[auto_1fr] dark:bg-gray-900"
+	class="grid h-screen bg-orange-50 not-md:grid-cols-1 not-md:*:col-span-full not-md:*:row-start-1 not-md:*:row-end-1 md:grid-cols-[auto_1fr] dark:bg-gray-900"
 >
 	<label
-		class="fixed bottom-6 left-6 z-20 aspect-square w-10 rounded-full bg-orange-500 before:absolute before:top-1/3 before:left-1/2 before:h-[3px] before:w-1/2 before:-translate-x-1/2 before:bg-orange-100 after:absolute after:bottom-1/3 after:left-1/2 after:h-[3px] after:w-1/2 after:-translate-x-1/2 after:bg-orange-100 sm:hidden"
+		class="fixed bottom-6 left-6 z-20 aspect-square w-10 rounded-full bg-orange-500 before:absolute before:top-1/3 before:left-1/2 before:h-[3px] before:w-1/2 before:-translate-x-1/2 before:bg-orange-100 after:absolute after:bottom-1/3 after:left-1/2 after:h-[3px] after:w-1/2 after:-translate-x-1/2 after:bg-orange-100 md:hidden"
 	>
 		<input id="menu-toggler" bind:checked type="checkbox" class="hidden" />
 	</label>
 	<!-- Sidebar -->
 	<div
-		class="test z-10 flex w-full flex-col border-r border-orange-200 bg-white not-sm:transform not-sm:transition-transform md:w-80 dark:border-gray-700 dark:bg-gray-800 not-sm:[:not(:has(:checked))_+_&]:-translate-x-full"
+		class="test z-10 flex w-full flex-col border-r border-orange-200 bg-white not-md:transform not-md:transition-transform md:w-80 dark:border-gray-700 dark:bg-gray-800 not-md:[:not(:has(:checked))_+_&]:-translate-x-full"
 	>
 		<!-- Header -->
 		<div class="border-b border-orange-200 p-4 dark:border-gray-700">
