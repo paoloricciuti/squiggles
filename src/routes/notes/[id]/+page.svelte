@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { get_notes } from '$lib/contexts/notes-contexts.js';
-	import { setupMarkdownHelpers } from '$lib/markdown-helpers.js';
+	import { setup_markdown_helpers } from '$lib/markdown-helpers.js';
 
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
@@ -61,7 +61,7 @@
 	function setup_textarea(element: HTMLTextAreaElement) {
 		textarea_element = element;
 		if (browser) {
-			cleanup_markdown_helpers = setupMarkdownHelpers(element);
+			cleanup_markdown_helpers = setup_markdown_helpers(element);
 		}
 		return {
 			destroy() {
