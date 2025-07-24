@@ -66,6 +66,7 @@
 		<!-- Notes List -->
 		<ul class="flex-1 overflow-y-auto">
 			{#each notes as note (note.id)}
+				{@const sliced_content = note.content.slice(0, 100)}
 				<li
 					class="block border-b border-orange-100 p-4 transition-colors hover:bg-orange-50 focus:bg-orange-100 focus:outline-none dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:bg-gray-600 {params.id ===
 					note.id.toString()
@@ -96,7 +97,13 @@
 						</form>
 					</div>
 					<p class="line-clamp-2 text-sm text-orange-700 dark:text-gray-300">
-						{note.content.slice(0, 100)}...
+						<a
+							onclick={() => {
+								checked = false;
+							}}
+							href="/notes/{note.id}"
+							>{sliced_content}{note.content !== sliced_content ? '...' : ''}</a
+						>
 					</p>
 					<p class="mt-2 text-xs text-orange-500 dark:text-gray-400">
 						{new Date(note.updated_at).toLocaleDateString()}
