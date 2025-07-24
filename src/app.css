@@ -3,7 +3,7 @@
 
 /* Dark mode configuration */
 @media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+	:root {
+		color-scheme: dark;
+	}
 }
