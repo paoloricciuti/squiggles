@@ -103,9 +103,9 @@ export function handle_enter_for_checklists(
 			const new_list_item = `\n${indent}${new_marker} `;
 			const new_value = value.substring(0, selection_start) + new_list_item + value.substring(selection_start);
 			
-			textarea.value = newValue;
-			const newCursorPos = selectionStart + newListItem.length;
-			textarea.setSelectionRange(newCursorPos, newCursorPos);
+			textarea.value = new_value;
+			const new_cursor_pos = selection_start + new_list_item.length;
+			textarea.setSelectionRange(new_cursor_pos, new_cursor_pos);
 			
 			return true;
 		}
