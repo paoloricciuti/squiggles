@@ -54,22 +54,6 @@
 			is_saving = false;
 		}
 	}
-
-	// Markdown helpers setup
-	let textarea_element: HTMLTextAreaElement;
-	let cleanup_markdown_helpers: (() => void) | null = null;
-
-	function setup_textarea(element: HTMLTextAreaElement) {
-		textarea_element = element;
-		if (browser) {
-			cleanup_markdown_helpers = setup_markdown_helpers(element);
-		}
-		return {
-			destroy() {
-				cleanup_markdown_helpers?.();
-			}
-		};
-	}
 </script>
 
 <svelte:head>
@@ -113,7 +97,7 @@
 		<textarea
 			name="content"
 			bind:value={note_content}
-			use:setup_textarea
+			{@attach (element) => setup_markdown_helpers(element)}
 			oninput={(e) => update_content(e.currentTarget.value)}
 			class="h-full w-full resize-none border-none font-mono text-orange-900 placeholder-orange-400 outline-none dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
 			placeholder={`Start writing your note in markdown...
