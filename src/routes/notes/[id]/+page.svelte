@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import { get_notes } from '$lib/contexts/notes-contexts.js';
+	import { setupMarkdownHelpers } from '$lib/markdown-helpers.js';
 
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
@@ -52,6 +53,22 @@
 			is_saving = false;
 		}
 	}
+
+	// Markdown helpers setup
+	let textarea_element: HTMLTextAreaElement;
+	let cleanup_markdown_helpers: (() => void) | null = null;
+
+	function setup_textarea(element: HTMLTextAreaElement) {
+		textarea_element = element;
+		if (browser) {
+			cleanup_markdown_helpers = setupMarkdownHelpers(element);
+		}
+		return {
+			destroy() {
+				cleanup_markdown_helpers?.();
+			}
+		};
+	}
 </script>
 
 <svelte:head>
@@ -95,9 +112,10 @@
 		<textarea
 			name="content"
 			bind:value={note_content}
+			use:setup_textarea
 			oninput={(e) => update_content(e.currentTarget.value)}
 			class="h-full w-full resize-none border-none font-mono text-orange-900 placeholder-orange-400 outline-none dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
-			placeholder="Start writing your note in markdown...\n\n# Heading 1\n## Heading 2\n\n- List item\n- Another item\n\n**Bold text** and *italic text*\n\n```\nCode block\n```"
+			placeholder="Start writing your note in markdown...\n\n# Heading 1\n## Heading 2\n\n- List item\n  - Nested item (use Tab to indent)\n- Another item\n- [ ] Checklist item (press Enter for next)\n- [x] Completed item\n\n**Bold text** and *italic text*\n\n```\nCode block\n```"
 		></textarea>
 	</div>
 </form>
