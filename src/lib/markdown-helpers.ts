@@ -203,6 +203,65 @@ export function handle_space_for_checkbox_toggle(
 	return true;
 }
 
+export function handle_click_for_checkbox_toggle(
+	textarea: HTMLTextAreaElement,
+	event: MouseEvent
+): boolean {
+	// Calculate click position in textarea
+	const rect = textarea.getBoundingClientRect();
+	const style = window.getComputedStyle(textarea);
+	const font_size = parseFloat(style.fontSize);
+	const line_height = parseFloat(style.lineHeight) || font_size * 1.2;
+	
+	// Calculate approximate character position from click coordinates
+	const x = event.clientX - rect.left - parseFloat(style.paddingLeft);
+	const y = event.clientY - rect.top - parseFloat(style.paddingTop) + textarea.scrollTop;
+	
+	// Get average character width (approximate)
+	const char_width = font_size * 0.6; // Approximate for monospace fonts
+	
+	// Calculate line and character position
+	const clicked_line = Math.floor(y / line_height);
+	const clicked_char = Math.floor(x / char_width);
+	
+	// Find the actual position in textarea text
+	const lines = textarea.value.split('\n');
+	if (clicked_line >= lines.length) return false;
+	
+	const line_start = lines.slice(0, clicked_line).reduce((sum, line) => sum + line.length + 1, 0);
+	const line_text = lines[clicked_line];
+	const click_position_in_line = Math.min(clicked_char, line_text.length);
+	const absolute_position = line_start + click_position_in_line;
+	
+	// Check if we're in a checkbox context
+	const match = line_text.match(CHECKBOX_FOR_TOGGLE_REGEX);
+	if (!match) return false;
+	
+	const { indent, marker, state } = match.groups ?? {};
+	const checkbox_start = indent.length + marker.length + 1; // +1 for space after marker
+	const checkbox_end = checkbox_start + 3; // [x] or [ ]
+	
+	// Check if click is inside the checkbox brackets
+	if (click_position_in_line < checkbox_start || click_position_in_line >= checkbox_end) return false;
+	
+	// Toggle the checkbox state
+	const new_state = state === ' ' ? 'x' : ' ';
+	const new_checkbox = `[${new_state}]`;
+	const new_line = line_text.replace(/\[([ x])\]/, new_checkbox);
+	
+	// Replace the line in the textarea
+	const line_info = {
+		line_start,
+		line_end: line_start + line_text.length,
+		current_line: line_text
+	};
+	
+	// Set cursor to the clicked position after update
+	replace_line_and_set_cursor(textarea, line_info, new_line, absolute_position);
+	
+	return true;
+}
+
 export function setup_markdown_helpers(
 	textarea: HTMLTextAreaElement,
 	options: MarkdownHelperOptions = default_options
@@ -230,10 +289,20 @@ export function setup_markdown_helpers(
 		}
 	}
 
+	function handle_click(event: MouseEvent) {
+		if (handle_click_for_checkbox_toggle(textarea, event)) {
+			// dispatch an artificial event to let the svelte handler work
+			textarea.dispatchEvent(new Event('input', { bubbles: true }));
+			return;
+		}
+	}
+
 	textarea.addEventListener('keydown', handle_key_down);
+	textarea.addEventListener('click', handle_click);
 
 	// Return cleanup function
 	return () => {
 		textarea.removeEventListener('keydown', handle_key_down);
+		textarea.removeEventListener('click', handle_click);
 	};
 }
