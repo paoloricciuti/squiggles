@@ -188,7 +188,7 @@ export function handle_space_for_checkbox_toggle(
 	const checkbox_end = checkbox_start + 3; // [x] or [ ]
 
 	// Check if cursor is inside the checkbox brackets
-	if (cursor_in_line < checkbox_start || cursor_in_line > checkbox_end) return false;
+	if (cursor_in_line < checkbox_start || cursor_in_line >= checkbox_end) return false;
 
 	event.preventDefault();
 
