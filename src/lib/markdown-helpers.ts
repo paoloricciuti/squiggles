@@ -203,62 +203,40 @@ export function handle_space_for_checkbox_toggle(
 	return true;
 }
 
-export function handle_click_for_checkbox_toggle(
+export function handle_pointer_for_checkbox_toggle(
 	textarea: HTMLTextAreaElement,
-	event: MouseEvent
+	event: PointerEvent
 ): boolean {
-	// Calculate click position in textarea
-	const rect = textarea.getBoundingClientRect();
-	const style = window.getComputedStyle(textarea);
-	const font_size = parseFloat(style.fontSize);
-	const line_height = parseFloat(style.lineHeight) || font_size * 1.2;
-	
-	// Calculate approximate character position from click coordinates
-	const x = event.clientX - rect.left - parseFloat(style.paddingLeft);
-	const y = event.clientY - rect.top - parseFloat(style.paddingTop) + textarea.scrollTop;
-	
-	// Get average character width (approximate)
-	const char_width = font_size * 0.6; // Approximate for monospace fonts
-	
-	// Calculate line and character position
-	const clicked_line = Math.floor(y / line_height);
-	const clicked_char = Math.floor(x / char_width);
-	
-	// Find the actual position in textarea text
-	const lines = textarea.value.split('\n');
-	if (clicked_line >= lines.length) return false;
-	
-	const line_start = lines.slice(0, clicked_line).reduce((sum, line) => sum + line.length + 1, 0);
-	const line_text = lines[clicked_line];
-	const click_position_in_line = Math.min(clicked_char, line_text.length);
-	const absolute_position = line_start + click_position_in_line;
-	
-	// Check if we're in a checkbox context
-	const match = line_text.match(CHECKBOX_FOR_TOGGLE_REGEX);
+	// Use browser's cursor positioning - much simpler and more accurate!
+	const { selectionStart: selection_start, value } = textarea;
+	const line_info = get_current_line_info(value, selection_start);
+	const { current_line } = line_info;
+
+	// Find cursor position within the line
+	const cursor_in_line = selection_start - line_info.line_start;
+
+	// Check if we're in a checkbox context and find the checkbox brackets
+	const match = current_line.match(CHECKBOX_FOR_TOGGLE_REGEX);
+
 	if (!match) return false;
-	
+
 	const { indent, marker, state } = match.groups ?? {};
 	const checkbox_start = indent.length + marker.length + 1; // +1 for space after marker
 	const checkbox_end = checkbox_start + 3; // [x] or [ ]
-	
-	// Check if click is inside the checkbox brackets
-	if (click_position_in_line < checkbox_start || click_position_in_line >= checkbox_end) return false;
-	
+
+	// Check if cursor is inside the checkbox brackets
+	if (cursor_in_line < checkbox_start || cursor_in_line >= checkbox_end) return false;
+
+	event.preventDefault();
+
 	// Toggle the checkbox state
 	const new_state = state === ' ' ? 'x' : ' ';
 	const new_checkbox = `[${new_state}]`;
-	const new_line = line_text.replace(/\[([ x])\]/, new_checkbox);
-	
-	// Replace the line in the textarea
-	const line_info = {
-		line_start,
-		line_end: line_start + line_text.length,
-		current_line: line_text
-	};
-	
-	// Set cursor to the clicked position after update
-	replace_line_and_set_cursor(textarea, line_info, new_line, absolute_position);
-	
+	const new_line = current_line.replace(/\[([ x])\]/, new_checkbox);
+
+	// Replace the line in the textarea and keep cursor in the same position
+	replace_line_and_set_cursor(textarea, line_info, new_line, selection_start);
+
 	return true;
 }
 
@@ -289,8 +267,8 @@ export function setup_markdown_helpers(
 		}
 	}
 
-	function handle_click(event: MouseEvent) {
-		if (handle_click_for_checkbox_toggle(textarea, event)) {
+	function handle_pointer_up(event: PointerEvent) {
+		if (handle_pointer_for_checkbox_toggle(textarea, event)) {
 			// dispatch an artificial event to let the svelte handler work
 			textarea.dispatchEvent(new Event('input', { bubbles: true }));
 			return;
@@ -298,11 +276,11 @@ export function setup_markdown_helpers(
 	}
 
 	textarea.addEventListener('keydown', handle_key_down);
-	textarea.addEventListener('click', handle_click);
+	textarea.addEventListener('pointerup', handle_pointer_up);
 
 	// Return cleanup function
 	return () => {
 		textarea.removeEventListener('keydown', handle_key_down);
-		textarea.removeEventListener('click', handle_click);
+		textarea.removeEventListener('pointerup', handle_pointer_up);
 	};
 }
