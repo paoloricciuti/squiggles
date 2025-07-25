@@ -7,7 +7,6 @@
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
 	let note_title = $derived(data.selected_note.title);
-	let is_saving = $state(false);
 	let last_saved = $derived(
 		data.selected_note.updated_at ? new Date(data.selected_note.updated_at) : null
 	);
@@ -35,7 +34,6 @@
 
 	// Save note function
 	async function save_note() {
-		is_saving = true;
 		try {
 			const new_note = { title: note_title, content: note_content };
 			const response = await fetch(`/api/notes/${data.selected_note.id}`, {
@@ -50,8 +48,6 @@
 			}
 		} catch (error) {
 			console.error('Failed to save note:', error);
-		} finally {
-			is_saving = false;
 		}
 	}
 </script>
@@ -85,7 +81,6 @@
 					save_note();
 				}}
 				class="rounded bg-orange-500 px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 focus:outline-none disabled:opacity-50 dark:bg-orange-600 dark:hover:bg-orange-700"
-				disabled={is_saving}
 			>
 				Save
 			</button>
