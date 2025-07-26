@@ -244,13 +244,13 @@ export function handle_pointer_for_checkbox_toggle(
 	const is_touch = event.pointerType === 'touch';
 	
 	if (is_touch) {
-		// On mobile, give a small delay to ensure cursor position is accurate
-		setTimeout(() => {
+		// On mobile, wait for next animation frame to ensure cursor position is accurate
+		requestAnimationFrame(() => {
 			if (handle_toggle()) {
 				// dispatch an artificial event to let the svelte handler work
 				textarea.dispatchEvent(new Event('input', { bubbles: true }));
 			}
-		}, 10);
+		});
 		return false; // Don't prevent default immediately for mobile
 	} else {
 		// Desktop/mouse behavior - handle immediately
