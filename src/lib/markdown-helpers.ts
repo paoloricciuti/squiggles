@@ -209,7 +209,7 @@ export function handle_pointer_for_checkbox_toggle(
 ): boolean {
 	// For mobile devices, we need to handle cursor positioning differently
 	// because selectionStart might not be accurate immediately after touch
-	const handle_toggle = () => {
+	function handle_toggle() {
 		const { selectionStart: selection_start, value } = textarea;
 		const line_info = get_current_line_info(value, selection_start);
 		const { current_line } = line_info;
