@@ -1,0 +1,1 @@
+ALTER TABLE `mcp_codes` ADD `user_id` integer NOT NULL REFERENCES users(id);

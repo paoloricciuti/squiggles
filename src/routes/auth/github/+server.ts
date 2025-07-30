@@ -2,12 +2,14 @@ import { GITHUB_CLIENT_ID, REDIRECT_BASE_URL } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 import { generate_code_verifier, generate_code_challenge } from '$lib/server/pkce';
 
-export async function GET({ cookies }) {
+export async function GET({ cookies, url }) {
 	if (!GITHUB_CLIENT_ID) {
 		throw new Error('GITHUB_CLIENT_ID is not configured');
 	}
 
-	const state = crypto.randomUUID();
+	const return_to = url.searchParams.get('return_to');
+
+	const state = return_to ?? crypto.randomUUID();
 	const code_verifier = generate_code_verifier();
 	const code_challenge = await generate_code_challenge(code_verifier);
 

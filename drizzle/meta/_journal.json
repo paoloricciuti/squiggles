@@ -8,6 +8,20 @@
       "when": 1753306410713,
       "tag": "0000_chemical_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1753894221383,
+      "tag": "0001_regular_black_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1753906852862,
+      "tag": "0002_lush_tyger_tiger",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { page } from '$app/state';
+</script>
+
 <div class="relative flex min-h-screen items-center justify-center bg-orange-50 dark:bg-gray-900">
 	<div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
 		<div class="mb-8 grid gap-8 text-center">
@@ -9,7 +13,7 @@
 		</div>
 
 		<a
-			href="/auth/github"
+			href="/auth/github{page.url.search}"
 			class="flex w-full items-center justify-center gap-3 rounded-lg bg-orange-500 px-4 py-3 font-medium text-white transition-colors hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700"
 		>
 			<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">

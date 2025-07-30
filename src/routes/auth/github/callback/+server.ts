@@ -1,4 +1,9 @@
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, JWT_SECRET } from '$env/static/private';
+import {
+	GITHUB_CLIENT_ID,
+	GITHUB_CLIENT_SECRET,
+	JWT_SECRET,
+	REDIRECT_BASE_URL
+} from '$env/static/private';
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
@@ -102,7 +107,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		cookies.set('session', session_token, {
 			path: '/',
 			httpOnly: true,
-			secure: false, // Set to true in production
+			secure: true,
 			sameSite: 'lax',
 			maxAge: 60 * 60 * 24 * 7 // 7 days
 		});
@@ -110,5 +115,14 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		console.error('GitHub OAuth error:', err);
 		error(500, 'Authentication failed');
 	}
-	redirect(302, '/notes');
+	let redirect_to = '/notes';
+	try {
+		const return_to = new URL(state);
+		if (return_to.origin === REDIRECT_BASE_URL) {
+			redirect_to = return_to.toString();
+		}
+	} catch {
+		/** empty */
+	}
+	redirect(302, redirect_to);
 };
