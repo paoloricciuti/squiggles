@@ -55,7 +55,8 @@ const auth_provider = new SimpleProvider({
 			const client_id = Math.random().toString(36).substring(2, 15);
 			const new_client = {
 				...client_info,
-				client_id
+				client_id,
+				client_id_issued_at: Date.now()
 			};
 			await db.insert(clients).values(new_client).execute();
 			return new_client;
@@ -170,7 +171,8 @@ const auth_provider = new SimpleProvider({
 }).build(REDIRECT_BASE_URL, {
 	bearer: {
 		paths: {
-			POST: ['/mcp']
+			POST: ['/mcp'],
+			GET: ['/sse']
 		}
 	},
 	cors: {
