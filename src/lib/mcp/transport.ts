@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { clients, codes, refresh_tokens, tokens } from '$lib/server/db/schema';
 import { SimpleProvider } from '@tmcp/auth';
 import { HttpTransport } from '@tmcp/transport-http';
+import { SseTransport } from '@tmcp/transport-sse';
 import { eq } from 'drizzle-orm';
 import { decodeJwt, jwtVerify, SignJWT } from 'jose';
 
@@ -179,6 +180,10 @@ const auth_provider = new SimpleProvider({
 	registration: true
 });
 
-export const transport = new HttpTransport(mcp_server, {
+export const http_transport = new HttpTransport(mcp_server, {
+	oauth: auth_provider
+});
+
+export const sse_transport = new SseTransport(mcp_server, {
 	oauth: auth_provider
 });
