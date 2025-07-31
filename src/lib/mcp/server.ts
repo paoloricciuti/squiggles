@@ -2,7 +2,7 @@ import { JWT_SECRET } from '$env/static/private';
 import { db } from '$lib/server/db';
 import { notes } from '$lib/server/db/schema';
 import { ValibotJsonSchemaAdapter } from '@tmcp/adapter-valibot';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, like } from 'drizzle-orm';
 import { jwtVerify } from 'jose';
 import { McpServer } from 'tmcp';
 import * as v from 'valibot';
@@ -102,25 +102,25 @@ mcp_server.tool(
 		},
 		title: 'Create Note',
 		schema: v.object({
-			content: v.string(),
-			title: v.string()
+			content: v.pipe(v.string(), v.description('The content of the note')),
+			title: v.pipe(v.string(), v.description('The title of the note'))
 		})
 	},
 	async ({ content, title }) => {
 		return tool_with_user(async (user_id) => {
-			await db
+			const [inserted] = await db
 				.insert(notes)
 				.values({
 					user_id,
 					content,
 					title
 				})
-				.execute();
+				.returning();
 			return {
 				content: [
 					{
 						type: 'text',
-						text: `Note "${title}" created successfully.`
+						text: `Note with title "${title}" and id ${inserted.id} created successfully.`
 					}
 				]
 			};
@@ -156,15 +156,25 @@ mcp_server.tool(
 mcp_server.tool(
 	{
 		name: 'update',
-		description: 'Update an existing note',
+		description:
+			'Update an existing note...remember to never assume the id of a note, always check with the list tool first.',
 		annotations: {
 			title: 'Update Note'
 		},
 		title: 'Update Note',
 		schema: v.object({
-			id: v.number(),
-			content: v.optional(v.string()),
-			title: v.optional(v.string())
+			id: v.pipe(
+				v.number(),
+				v.description('The ID of the note to update...check with the list tool first')
+			),
+			content: v.pipe(
+				v.optional(v.string()),
+				v.description('The new content of the note...if undefined it will be left unchanged')
+			),
+			title: v.pipe(
+				v.optional(v.string()),
+				v.description('The new title of the note...if undefined it will be left unchanged')
+			)
 		})
 	},
 	async ({ content, title, id }) => {
@@ -181,7 +191,7 @@ mcp_server.tool(
 				content: [
 					{
 						type: 'text' as const,
-						text: `Note "${title}" created successfully.`
+						text: `Note "${title}" updated successfully.`
 					}
 				]
 			};
@@ -195,6 +205,30 @@ mcp_server.template(
 		description: 'A note in Squggles',
 		uri: 'squiggles://notes/{id}',
 		title: 'Notes',
+		complete: {
+			id: async (arg) => {
+				const user_id = await get_user_or_fail();
+				let column_eq: ReturnType<typeof like | typeof eq>;
+				if (isNaN(parseInt(arg))) {
+					column_eq = like(notes.title, `%${arg}%`);
+				} else {
+					column_eq = eq(notes.id, +arg);
+				}
+				const notes_list = await db
+					.select()
+					.from(notes)
+					.where(and(column_eq, eq(notes.user_id, user_id)))
+					.execute();
+				const values = notes_list.map((note) => note.id.toString());
+				return {
+					completion: {
+						values,
+						hasMore: false,
+						total: values.length
+					}
+				};
+			}
+		},
 		async list() {
 			const user_id = await get_user_or_fail();
 			const notes_list = await db.select().from(notes).where(eq(notes.user_id, user_id)).execute();
