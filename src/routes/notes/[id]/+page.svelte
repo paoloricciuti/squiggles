@@ -57,7 +57,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </svelte:head>
 
-<form use:enhance method="POST" action="?/save" class="flex flex-1 flex-col">
+<form use:enhance method="POST" action="?/save" class="flex flex-1 flex-col overflow-hidden">
 	<!-- Editor Header -->
 	<div class="border-b border-orange-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
 		<input
@@ -88,13 +88,13 @@
 	</div>
 
 	<!-- Editor Content -->
-	<div class="flex-1 bg-white p-4 dark:bg-gray-900">
+	<div class="flex-1 bg-white dark:bg-gray-900">
 		<textarea
 			name="content"
 			bind:value={note_content}
 			{@attach (element) => setup_markdown_helpers(element)}
 			oninput={(e) => update_content(e.currentTarget.value)}
-			class="h-full w-full resize-none border-none font-mono text-orange-900 placeholder-orange-400 outline-none dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
+			class="h-full w-full resize-none border-none p-4 font-mono text-orange-900 placeholder-orange-400 outline-none not-sm:max-h-[calc(100%-var(--spacing)*22)] dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
 			placeholder={`Start writing your note in markdown...
 
 # Heading 1

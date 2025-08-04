@@ -29,7 +29,7 @@
 	</label>
 	<!-- Sidebar -->
 	<div
-		class="test z-10 flex w-full flex-col border-r border-orange-200 bg-white not-md:transform not-md:transition-transform md:w-80 dark:border-gray-700 dark:bg-gray-800 not-md:[:not(:has(:checked))_+_&]:-translate-x-full"
+		class="test z-10 flex w-full flex-col overflow-auto border-r border-orange-200 bg-white not-md:transform not-md:transition-transform md:w-80 dark:border-gray-700 dark:bg-gray-800 not-md:[:not(:has(:checked))_+_&]:-translate-x-full"
 	>
 		<!-- Header -->
 		<div class="border-b border-orange-200 p-4 dark:border-gray-700">
