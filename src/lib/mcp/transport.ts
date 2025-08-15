@@ -40,6 +40,12 @@ async function get_user_id(request: Request) {
 	}
 }
 
+const cors = {
+	origin: '*',
+	credentials: true,
+	allowedHeaders: ['*']
+};
+
 const auth_provider = new SimpleProvider({
 	clients: {
 		async get(client_id) {
@@ -175,17 +181,16 @@ const auth_provider = new SimpleProvider({
 			GET: ['/sse']
 		}
 	},
-	cors: {
-		origin: '*',
-		credentials: true
-	},
+	cors,
 	registration: true
 });
 
 export const http_transport = new HttpTransport(mcp_server, {
-	oauth: auth_provider
+	oauth: auth_provider,
+	cors
 });
 
 export const sse_transport = new SseTransport(mcp_server, {
-	oauth: auth_provider
+	oauth: auth_provider,
+	cors
 });

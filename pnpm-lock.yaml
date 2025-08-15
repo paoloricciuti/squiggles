@@ -18,11 +18,11 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3(tmcp@1.9.1(typescript@5.8.3))(typescript@5.8.3)
       '@tmcp/transport-http':
-        specifier: ^0.5.2
-        version: 0.5.2(tmcp@1.9.1(typescript@5.8.3))
+        specifier: ^0.5.4
+        version: 0.5.4(tmcp@1.9.1(typescript@5.8.3))
       '@tmcp/transport-sse':
-        specifier: ^0.2.3
-        version: 0.2.3(tmcp@1.9.1(typescript@5.8.3))
+        specifier: ^0.2.5
+        version: 0.2.5(tmcp@1.9.1(typescript@5.8.3))
       drizzle-orm:
         specifier: ^0.40.0
         version: 0.40.1(@libsql/client@0.14.0)(gel@2.1.1)
@@ -1049,15 +1049,15 @@ packages:
     peerDependencies:
       tmcp: ^1.9.1
 
-  '@tmcp/transport-http@0.5.2':
-    resolution: {integrity: sha512-fhc/WFtg8bQcSWHZiJotSs7/ZgU2Si9nWS9dmqW2xRMXD8kHfoz+VVO1sFsQaWgLXPiS2cYJbxQ45BI961ctYA==}
+  '@tmcp/transport-http@0.5.4':
+    resolution: {integrity: sha512-xNtS+czFD2JsdtnHRFmFJdIuiwgHQDicYv8Y/IS1AztfdfH16TKW9+zS2zQAMJ1zxsOlpaOUuIJuS72++iZ1Pw==}
     peerDependencies:
-      tmcp: ^1.9.1
+      tmcp: ^1.10.2
 
-  '@tmcp/transport-sse@0.2.3':
-    resolution: {integrity: sha512-/rr3CuS67ooEcnI5XUrem16vpS1jOqTeUR8h9mx7GhMZZ18rL028xKm2FOhULMoU/xmBXfWcxuTSgejLpytLDg==}
+  '@tmcp/transport-sse@0.2.5':
+    resolution: {integrity: sha512-UnFUBla6ZCTyIgO6ZmXCr6gNaXeBMexP9v1TC+dAnZyteFEYzm5U1YXGHDYKUaBBZDhK256ObZhKuU1sNesYdg==}
     peerDependencies:
-      tmcp: ^1.9.1
+      tmcp: ^1.10.2
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
@@ -3205,11 +3205,11 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@tmcp/transport-http@0.5.2(tmcp@1.9.1(typescript@5.8.3))':
+  '@tmcp/transport-http@0.5.4(tmcp@1.9.1(typescript@5.8.3))':
     dependencies:
       tmcp: 1.9.1(typescript@5.8.3)
 
-  '@tmcp/transport-sse@0.2.3(tmcp@1.9.1(typescript@5.8.3))':
+  '@tmcp/transport-sse@0.2.5(tmcp@1.9.1(typescript@5.8.3))':
     dependencies:
       tmcp: 1.9.1(typescript@5.8.3)
 
