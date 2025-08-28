@@ -94,7 +94,7 @@
 			bind:value={note_content}
 			{@attach (element) => setup_markdown_helpers(element)}
 			oninput={(e) => update_content(e.currentTarget.value)}
-			class="h-full w-full resize-none border-none p-4 font-mono text-orange-900 placeholder-orange-400 outline-none not-sm:max-h-[calc(100%-var(--spacing)*22)] dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
+			class="h-full w-full resize-none border-none p-4 font-mono text-orange-900 placeholder-orange-400 outline-none not-md:max-h-[calc(100%-var(--spacing)*22)] dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
 			placeholder={`Start writing your note in markdown...
 
 # Heading 1
