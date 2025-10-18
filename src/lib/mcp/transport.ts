@@ -187,10 +187,12 @@ const auth_provider = new SimpleProvider({
 
 export const http_transport = new HttpTransport(mcp_server, {
 	oauth: auth_provider,
-	cors
+	cors,
+	path: '/mcp'
 });
 
 export const sse_transport = new SseTransport(mcp_server, {
 	oauth: auth_provider,
-	cors
+	cors,
+	path: '/sse'
 });
