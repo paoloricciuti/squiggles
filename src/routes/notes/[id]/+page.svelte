@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { get_notes } from '$lib/contexts/notes-contexts.js';
 	import { setup_markdown_helpers } from '$lib/markdown-helpers.js';
+	import { marked } from 'marked';
 
 	let { data } = $props();
 	let note_content = $derived(data.selected_note.content);
@@ -12,6 +13,24 @@
 	);
 
 	const override = $derived(get_notes()(data.selected_note.id));
+
+	// Preview mode state
+	let is_preview_mode = $state(false);
+
+	// Configure marked to open links in new tabs
+	marked.use({
+		renderer: {
+			link({ href, title, text }) {
+				return `<a href="${href}" ${title ? `title="${title}"` : ''} target="_blank" rel="noopener noreferrer">${text}</a>`;
+			}
+		}
+	});
+
+	// Render markdown to HTML
+	let rendered_html = $derived.by(() => {
+		if (!is_preview_mode) return '';
+		return marked.parse(note_content) as string;
+	});
 
 	// Auto-save functionality
 	let save_timeout: ReturnType<typeof setTimeout>;
@@ -75,27 +94,43 @@
 					<span>✨ Auto-save enabled</span>
 				{/if}
 			</div>
-			<button
-				onclick={(e) => {
-					e.preventDefault();
-					save_note();
-				}}
-				class="rounded bg-orange-500 px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 focus:outline-none disabled:opacity-50 dark:bg-orange-600 dark:hover:bg-orange-700"
-			>
-				Save
-			</button>
+			<div class="flex gap-2">
+				<button
+					onclick={(e) => {
+						e.preventDefault();
+						is_preview_mode = !is_preview_mode;
+					}}
+					class="rounded bg-orange-400 px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-orange-500 focus:ring-2 focus:ring-orange-400 focus:outline-none dark:bg-orange-500 dark:hover:bg-orange-600"
+				>
+					{is_preview_mode ? 'Edit' : 'Preview'}
+				</button>
+				<button
+					onclick={(e) => {
+						e.preventDefault();
+						save_note();
+					}}
+					class="rounded bg-orange-500 px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-orange-600 focus:ring-2 focus:ring-orange-400 focus:outline-none disabled:opacity-50 dark:bg-orange-600 dark:hover:bg-orange-700"
+				>
+					Save
+				</button>
+			</div>
 		</div>
 	</div>
 
 	<!-- Editor Content -->
-	<div class="flex-1 bg-white dark:bg-gray-900">
-		<textarea
-			name="content"
-			bind:value={note_content}
-			{@attach (element) => setup_markdown_helpers(element)}
-			oninput={(e) => update_content(e.currentTarget.value)}
-			class="h-full w-full resize-none border-none p-4 font-mono text-orange-900 placeholder-orange-400 outline-none not-md:max-h-[calc(100%-var(--spacing)*22)] dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
-			placeholder={`Start writing your note in markdown...
+	<div class="flex-1 overflow-auto bg-white dark:bg-gray-900">
+		{#if is_preview_mode}
+			<div class="prose prose-orange max-w-none p-4 dark:prose-invert">
+				{@html rendered_html}
+			</div>
+		{:else}
+			<textarea
+				name="content"
+				bind:value={note_content}
+				{@attach (element) => setup_markdown_helpers(element)}
+				oninput={(e) => update_content(e.currentTarget.value)}
+				class="h-full w-full resize-none border-none p-4 font-mono text-orange-900 placeholder-orange-400 outline-none not-md:max-h-[calc(100%-var(--spacing)*22)] dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
+				placeholder={`Start writing your note in markdown...
 
 # Heading 1
 ## Heading 2
@@ -107,6 +142,7 @@
 \`\`\`
 Code block
 \`\`\``}
-		></textarea>
+			></textarea>
+		{/if}
 	</div>
 </form>
