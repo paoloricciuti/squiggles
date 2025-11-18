@@ -13,16 +13,16 @@ importers:
         version: 0.14.0
       '@tmcp/adapter-valibot':
         specifier: ^0.1.3
-        version: 0.1.3(tmcp@1.15.1(typescript@5.8.3))(valibot@1.1.0(typescript@5.8.3))
+        version: 0.1.3(tmcp@1.18.1(typescript@5.8.3))(valibot@1.1.0(typescript@5.8.3))
       '@tmcp/auth':
-        specifier: ^0.3.3
-        version: 0.3.3(tmcp@1.15.1(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^0.4.0
+        version: 0.4.0(tmcp@1.18.1(typescript@5.8.3))(typescript@5.8.3)
       '@tmcp/transport-http':
-        specifier: ^0.7.0
-        version: 0.7.0(tmcp@1.15.1(typescript@5.8.3))
+        specifier: ^0.8.2
+        version: 0.8.2(@tmcp/auth@0.4.0(tmcp@1.18.1(typescript@5.8.3))(typescript@5.8.3))(tmcp@1.18.1(typescript@5.8.3))
       '@tmcp/transport-sse':
         specifier: ^0.4.0
-        version: 0.4.0(tmcp@1.15.1(typescript@5.8.3))
+        version: 0.4.0(tmcp@1.18.1(typescript@5.8.3))
       drizzle-orm:
         specifier: ^0.40.0
         version: 0.40.1(@libsql/client@0.14.0)(gel@2.1.1)
@@ -30,8 +30,8 @@ importers:
         specifier: ^6.0.12
         version: 6.0.12
       tmcp:
-        specifier: ^1.15.1
-        version: 1.15.1(typescript@5.8.3)
+        specifier: ^1.18.1
+        version: 1.18.1(typescript@5.8.3)
       valibot:
         specifier: ^1.1.0
         version: 1.1.0(typescript@5.8.3)
@@ -979,18 +979,27 @@ packages:
       tmcp: ^1.8.1
       valibot: ^1.1.0
 
-  '@tmcp/auth@0.3.3':
-    resolution: {integrity: sha512-TZ/hiTKGmshZ9JYBGJ7hS4e646viS4qH89H8PLHO0HkcD4w2+POyxHqoaJYeKsQUcHVXEeSWCMbFXwbJBiqAJQ==}
+  '@tmcp/auth@0.4.0':
+    resolution: {integrity: sha512-NisJWuAV6Gk2ZEq1kiQgZYC0btl9rdDWoMHQ7Pf/vIjZSuyyIxmxNHdXEe7UVEtnOvbk13NGU+mVlQtlu9PJcw==}
     peerDependencies:
-      tmcp: ^1.9.1
+      tmcp: ^1.17.0
 
   '@tmcp/session-manager@0.1.2':
     resolution: {integrity: sha512-hNkEeMt7/CdD8JdjPXMlIv5OMPTp5LnBqeo1Tb/AXcm31DpgwlNbf4voJ3CeWxWAZPPZ/MgHZ682TtgGhsvXiw==}
 
-  '@tmcp/transport-http@0.7.0':
-    resolution: {integrity: sha512-JvLvi2ZM3xaBIZyxy6ssGtzlhL/5JvOkjWWymxkLi84vMK44pM5zCQVN1KXAfQqHbbDlYNR/BW39cd/eP3hylA==}
+  '@tmcp/session-manager@0.2.1':
+    resolution: {integrity: sha512-DOGy9LfufXCy1wfpGHZ6qPSDQtRnTVwOb71+41ffovTqzLMZlK3iLK/LIsekHxIiku+iIAUiqEKN+DHbqEm8IA==}
     peerDependencies:
-      tmcp: ^1.15.1
+      tmcp: ^1.16.3
+
+  '@tmcp/transport-http@0.8.2':
+    resolution: {integrity: sha512-UURk4keyf7YNA/CikBycoIC9hmcpZWohDjQA5MDa/xD3Wg6tXLhti1hEsiZblMwcOA7X1SjnUheKShU1dvPyIA==}
+    peerDependencies:
+      '@tmcp/auth': ^0.3.3 || ^0.4.0
+      tmcp: ^1.18.0
+    peerDependenciesMeta:
+      '@tmcp/auth':
+        optional: true
 
   '@tmcp/transport-sse@0.4.0':
     resolution: {integrity: sha512-lxK3AR8spTFEd+XT2t10k+wgydMB3wqAPD5mx2ivpej4E3FuGVl0tZNovteGLMLfD2GsOPI6qdRETkmA0MFulw==}
@@ -1763,8 +1772,8 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
-  pkce-challenge@4.1.0:
-    resolution: {integrity: sha512-ZBmhE1C9LcPoH9XZSdwiPtbPHZROwAnMy+kIFQVrnMCxY4Cudlz3gBOpzilgc0jOgRaiT3sIWfpMomW2ar2orQ==}
+  pkce-challenge@5.0.0:
+    resolution: {integrity: sha512-ueGLflrrnvwB3xuo/uGob5pd5FN7l0MsLf0Z87o/UQmRtwjvfylfc9MurIxRAWywCYTgrvpXBcqjV4OfCYGCIQ==}
     engines: {node: '>=16.20.0'}
 
   postcss-load-config@3.1.4:
@@ -2007,8 +2016,8 @@ packages:
     resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
     engines: {node: '>=12.0.0'}
 
-  tmcp@1.15.1:
-    resolution: {integrity: sha512-Mn2FZIcN6Vj/pJYda/Zv1t5Iv0vJIQDi+BRpcpBn9gNwID5bNtgMFOj+1LH3rkOJOTz9R78dIXSsJxDN5Vy90g==}
+  tmcp@1.18.1:
+    resolution: {integrity: sha512-P7MR8zKO447R317sm1rQES4JBkhibJS+W1YIz8neysO+rGr3oHSN1FO0vWgq/EtNz7EU57iutCZaBRBuiBbPvA==}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -2776,36 +2785,42 @@ snapshots:
       tailwindcss: 4.1.11
       vite: 7.0.6(@types/node@20.19.9)(jiti@2.5.1)(lightningcss@1.30.1)
 
-  '@tmcp/adapter-valibot@0.1.3(tmcp@1.15.1(typescript@5.8.3))(valibot@1.1.0(typescript@5.8.3))':
+  '@tmcp/adapter-valibot@0.1.3(tmcp@1.18.1(typescript@5.8.3))(valibot@1.1.0(typescript@5.8.3))':
     dependencies:
       '@standard-schema/spec': 1.0.0
       '@valibot/to-json-schema': 1.3.0(valibot@1.1.0(typescript@5.8.3))
-      tmcp: 1.15.1(typescript@5.8.3)
+      tmcp: 1.18.1(typescript@5.8.3)
       valibot: 1.1.0(typescript@5.8.3)
 
-  '@tmcp/auth@0.3.3(tmcp@1.15.1(typescript@5.8.3))(typescript@5.8.3)':
+  '@tmcp/auth@0.4.0(tmcp@1.18.1(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
       '@standard-schema/spec': 1.0.0
       '@types/json-schema': 7.0.15
-      pkce-challenge: 4.1.0
-      tmcp: 1.15.1(typescript@5.8.3)
+      pkce-challenge: 5.0.0
+      tmcp: 1.18.1(typescript@5.8.3)
       valibot: 1.1.0(typescript@5.8.3)
     transitivePeerDependencies:
       - typescript
 
   '@tmcp/session-manager@0.1.2': {}
 
-  '@tmcp/transport-http@0.7.0(tmcp@1.15.1(typescript@5.8.3))':
+  '@tmcp/session-manager@0.2.1(tmcp@1.18.1(typescript@5.8.3))':
     dependencies:
-      '@tmcp/session-manager': 0.1.2
-      esm-env: 1.2.2
-      tmcp: 1.15.1(typescript@5.8.3)
+      tmcp: 1.18.1(typescript@5.8.3)
 
-  '@tmcp/transport-sse@0.4.0(tmcp@1.15.1(typescript@5.8.3))':
+  '@tmcp/transport-http@0.8.2(@tmcp/auth@0.4.0(tmcp@1.18.1(typescript@5.8.3))(typescript@5.8.3))(tmcp@1.18.1(typescript@5.8.3))':
+    dependencies:
+      '@tmcp/session-manager': 0.2.1(tmcp@1.18.1(typescript@5.8.3))
+      esm-env: 1.2.2
+      tmcp: 1.18.1(typescript@5.8.3)
+    optionalDependencies:
+      '@tmcp/auth': 0.4.0(tmcp@1.18.1(typescript@5.8.3))(typescript@5.8.3)
+
+  '@tmcp/transport-sse@0.4.0(tmcp@1.18.1(typescript@5.8.3))':
     dependencies:
       '@tmcp/session-manager': 0.1.2
       esm-env: 1.2.2
-      tmcp: 1.15.1(typescript@5.8.3)
+      tmcp: 1.18.1(typescript@5.8.3)
 
   '@types/cookie@0.6.0': {}
 
@@ -3532,7 +3547,7 @@ snapshots:
 
   picomatch@4.0.3: {}
 
-  pkce-challenge@4.1.0: {}
+  pkce-challenge@5.0.0: {}
 
   postcss-load-config@3.1.4(postcss@8.5.6):
     dependencies:
@@ -3729,7 +3744,7 @@ snapshots:
       fdir: 6.4.6(picomatch@4.0.3)
       picomatch: 4.0.3
 
-  tmcp@1.15.1(typescript@5.8.3):
+  tmcp@1.18.1(typescript@5.8.3):
     dependencies:
       '@standard-schema/spec': 1.0.0
       json-rpc-2.0: 1.7.1

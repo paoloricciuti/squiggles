@@ -45,12 +45,12 @@
 	"dependencies": {
 		"@libsql/client": "^0.14.0",
 		"@tmcp/adapter-valibot": "^0.1.3",
-		"@tmcp/auth": "^0.3.3",
-		"@tmcp/transport-http": "^0.7.0",
+		"@tmcp/auth": "^0.4.0",
+		"@tmcp/transport-http": "^0.8.2",
 		"@tmcp/transport-sse": "^0.4.0",
 		"drizzle-orm": "^0.40.0",
 		"jose": "^6.0.12",
-		"tmcp": "^1.15.1",
+		"tmcp": "^1.18.1",
 		"valibot": "^1.1.0"
 	},
 	"engines": {
